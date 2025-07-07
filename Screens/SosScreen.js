@@ -1,53 +1,108 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  Alert,
+  Switch,
+  TouchableOpacity,
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 export default function SosScreen() {
-  const [sent, setSent] = useState(false);
+  const [emergencyType, setEmergencyType] = useState('select');
+  const [shareLocation, setShareLocation] = useState(false);
 
   const handleSOS = () => {
-    setSent(true);
-    Alert.alert("SOS Alert Sent", "Your emergency location has been shared.");
-    // In future: Get location and send to backend or emergency contacts
+    if (emergencyType === 'select') {
+      Alert.alert('Please select an emergency type first.');
+      return;
+    }
+
+    let message = `🚨 Emergency Type: ${emergencyType}`;
+    message += shareLocation
+      ? '\n📍 Location sharing is ON.'
+      : '\n📍 Location sharing is OFF.';
+
+    Alert.alert('SOS Sent!', message);
+  };
+
+  const callEmergencyContact = () => {
+    Alert.alert('Calling...', 'Emergency contact has been notified!');
+    // Later: integrate with linking or Twilio API
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.sosButton} onPress={handleSOS}>
-        <Text style={styles.sosText}>SOS</Text>
+      <Text style={styles.heading}>Report an Emergency</Text>
+
+      <Text style={styles.label}>Select Emergency Type:</Text>
+      <Picker
+        selectedValue={emergencyType}
+        onValueChange={(itemValue) => setEmergencyType(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="-- Select --" value="select" />
+        <Picker.Item label="Robbery" value="Robbery" />
+        <Picker.Item label="Harassment" value="Harassment" />
+        <Picker.Item label="Assault" value="Assault" />
+        <Picker.Item label="Domestic Violence" value="Domestic Violence" />
+        <Picker.Item label="Other" value="Other" />
+      </Picker>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Share Location:</Text>
+        <Switch
+          value={shareLocation}
+          onValueChange={() => setShareLocation(!shareLocation)}
+        />
+      </View>
+
+      <TouchableOpacity style={styles.contactBtn} onPress={callEmergencyContact}>
+        <Text style={styles.contactBtnText}>📞 Call Emergency Contact</Text>
       </TouchableOpacity>
-      {sent && <Text style={styles.confirmation}>Alert sent successfully</Text>}
+
+      <Button title="🚨 Send SOS Alert" onPress={handleSOS} color="#D32F2F" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  sosButton: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 30,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 6,
-    elevation: 8,
+  container: {
+    flex: 1,
+    padding: 20,
+    paddingTop: 50,
   },
-  sosText: {
-    fontSize: 48,
+  heading: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 30,
+  },
+  label: {
+    fontSize: 16,
+    marginVertical: 10,
+  },
+  picker: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  contactBtn: {
+    backgroundColor: '#1976D2',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  contactBtnText: {
     color: 'white',
+    textAlign: 'center',
     fontWeight: 'bold',
   },
-  confirmation: {
-    fontSize: 16,
-    color: 'green',
-    marginTop: 10,
-  },
 });
-// This is the SosScreen component for the Say It app, which allows users to send an SOS alert.
-// It includes a large red button that, when pressed, simulates sending an emergency alert and displays a confirmation message.
-// The SOS button is styled to be prominent and visually distinct, ensuring it is easily accessible in emergencies.
-// In the future, this component can be expanded to include location tracking and integration with emergency services or contacts.  
