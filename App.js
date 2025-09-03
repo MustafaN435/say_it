@@ -1,6 +1,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useEffect } from 'react';
+import { ensureAuthReady } from './firebase';
 
 import HomeScreen from './Screens/HomeScreen';
 import ChatScreen from './Screens/ChatScreen';
@@ -10,6 +12,9 @@ import ReportScreen from './Screens/ReportScreen';
 const Stack = createStackNavigator();
 
 export default function App() {
+  useEffect(() => {
+    ensureAuthReady().catch(console.error);
+  }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
